@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private isProd = typeof window !== 'undefined' && window.location.hostname !== 'localhost';
-  private apiUrl = this.isProd ? 'https://YOUR_RENDER_APP_URL/api/auth' : 'http://localhost:3000/api/auth';
+  private apiUrl = this.isProd ? 'https://drivo-im82.onrender.com/api/auth' : 'http://localhost:3000/api/auth';
 
   constructor(private http: HttpClient, private router: Router) {}
 

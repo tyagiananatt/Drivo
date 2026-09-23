@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ApiService {
   private isProd = typeof window !== 'undefined' && window.location.hostname !== 'localhost';
-  private apiUrl = this.isProd ? 'https://YOUR_RENDER_APP_URL/api' : 'http://localhost:3000/api';
+  private apiUrl = this.isProd ? 'https://drivo-im82.onrender.com/api' : 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
 
