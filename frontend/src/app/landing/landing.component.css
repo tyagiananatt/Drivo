@@ -105,7 +105,7 @@
   border-bottom: 4px solid var(--border);
 }
 .hero-title {
-  font-size: clamp(60px, 10vw, 120px);
+  font-size: clamp(40px, 12vw, 120px);
   font-weight: 900;
   text-transform: uppercase;
   line-height: 0.9;
@@ -134,7 +134,7 @@
   border-bottom: 4px solid var(--border);
 }
 .section-heading {
-  font-size: clamp(40px, 6vw, 80px);
+  font-size: clamp(32px, 8vw, 80px);
   font-weight: 900;
   text-transform: uppercase;
   margin-bottom: 24px;
@@ -271,4 +271,39 @@
   .hero-section { padding: 120px 24px 40px; }
   .step-container { grid-template-columns: 1fr; }
   .site-footer { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+  .hero-actions { 
+    flex-direction: column; 
+    gap: 16px; 
+    width: 100%; 
+  }
+  .hero-actions a { 
+    width: 100%; 
+    text-align: center; 
+  }
+  .section { 
+    padding: 60px 24px; 
+  }
+  .site-footer { 
+    grid-template-columns: 1fr; 
+    gap: 32px;
+  }
+  .nav-brand { 
+    font-size: 24px; 
+  }
+  .btn-primary, .btn-outline { 
+    padding: 12px 20px; 
+    font-size: 14px; 
+  }
+  .brutal-card { 
+    padding: 24px; 
+  }
+  .card-num, .step-num {
+    font-size: 40px;
+  }
+  .card-title, .step-title {
+    font-size: 24px;
+  }
 }
