@@ -7,7 +7,8 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api/auth';
+  private isProd = typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+  private apiUrl = this.isProd ? 'https://YOUR_RENDER_APP_URL/api/auth' : 'http://localhost:3000/api/auth';
 
   constructor(private http: HttpClient, private router: Router) {}
 

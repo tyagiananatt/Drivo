@@ -5,7 +5,8 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'http://localhost:3000/api';
+  private isProd = typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+  private apiUrl = this.isProd ? 'https://YOUR_RENDER_APP_URL/api' : 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
 
