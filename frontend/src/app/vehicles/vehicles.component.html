@@ -26,7 +26,7 @@
       </thead>
       <tbody>
         @for (v of vehicles; track v.id) {
-          <tr>
+          <tr (click)="openVehicleProfile(v)" style="cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
             <td style="font-weight: 700; color: var(--primary);">{{ v.registrationNumber }}</td>
             <td>
               <div style="font-weight: 500;">{{ v.manufacturer }}</div>
@@ -123,6 +123,123 @@
           <button type="submit" class="btn btn-primary">Add Vehicle</button>
         </div>
       </form>
+    </div>
+  </div>
+}
+
+@if (selectedVehicle) {
+  <div class="modal-backdrop" (click)="closeVehicleProfile()">
+    <div class="modal-content" style="max-width: 600px;" (click)="$event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px;">
+        <h2 class="title" style="margin: 0;">Vehicle Profile</h2>
+        <button class="btn btn-outline" (click)="closeVehicleProfile()">Close</button>
+      </div>
+
+      <!-- VIEW MODE -->
+      @if (!editMode) {
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; justify-content: space-between;">
+            <div>
+              <div style="font-size: 24px; font-weight: 700;">{{ selectedVehicle.manufacturer }} {{ selectedVehicle.model }}</div>
+              <div style="color: var(--text-muted);">{{ selectedVehicle.registrationNumber }}</div>
+              <div style="color: var(--primary); font-size: 14px; margin-top: 4px;">Vendor: {{ selectedVehicle.vendor?.name || 'Unknown' }}</div>
+            </div>
+            <div>
+              <span class="badge" [ngClass]="{'badge-success': selectedVehicle.status === 'ACTIVE', 'badge-warning': selectedVehicle.status === 'PENDING', 'badge-danger': selectedVehicle.status === 'INACTIVE' || selectedVehicle.status === 'BLOCKED'}">
+                {{ selectedVehicle.status }}
+              </span>
+            </div>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: var(--border-radius);">
+            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Vehicle Specifications</div>
+            <div style="font-weight: 500; font-size: 16px;">Type: {{ selectedVehicle.vehicleType }}</div>
+            <div style="font-size: 14px;">Seats: {{ selectedVehicle.seatingCapacity }} | Fuel: {{ selectedVehicle.fuelType }}</div>
+            <div style="font-size: 14px; color: var(--text-muted);">Year: {{ selectedVehicle.manufacturingYear }}</div>
+          </div>
+
+          <!-- Assignment Section -->
+          <div style="border: 1px solid var(--border); padding: 16px; border-radius: var(--border-radius);">
+            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Driver Assignment</div>
+            
+            @if (selectedVehicle.assignments && selectedVehicle.assignments.length > 0) {
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-weight: 700; color: var(--primary); font-size: 18px;">{{ selectedVehicle.assignments[0].driver?.name || 'Unknown Driver' }}</div>
+                  <div style="font-size: 14px; color: var(--text-muted);">{{ selectedVehicle.assignments[0].driver?.phone }}</div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted);">Manage in Drivers Tab</div>
+              </div>
+            } @else {
+              <div style="color: var(--text-muted);">Currently not assigned to any driver.</div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">To assign a driver, go to the Drivers tab.</div>
+            }
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+            <button *ngIf="authService.hasPermission('VEHICLE_UPDATE')" class="btn btn-outline" (click)="editMode = true">Edit Vehicle Details</button>
+          </div>
+        </div>
+      }
+
+      <!-- EDIT MODE -->
+      @if (editMode) {
+        <form (ngSubmit)="updateVehicleProfile()">
+          <div class="form-group">
+            <label>Registration Number</label>
+            <input type="text" class="form-control" [(ngModel)]="editPayload.registrationNumber" name="editReg" required>
+          </div>
+          
+          <div class="flex gap-4">
+            <div class="form-group" style="flex: 1;">
+              <label>Manufacturer</label>
+              <input type="text" class="form-control" [(ngModel)]="editPayload.manufacturer" name="editMfg" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label>Model</label>
+              <input type="text" class="form-control" [(ngModel)]="editPayload.model" name="editModel" required>
+            </div>
+          </div>
+
+          <div class="flex gap-4">
+            <div class="form-group" style="flex: 1;">
+              <label>Vehicle Type</label>
+              <select class="form-control" [(ngModel)]="editPayload.vehicleType" name="editType">
+                <option value="Hatchback">Hatchback</option>
+                <option value="Sedan">Sedan</option>
+                <option value="SUV">SUV</option>
+                <option value="Van">Van</option>
+                <option value="Bus">Bus</option>
+              </select>
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label>Fuel Type</label>
+              <select class="form-control" [(ngModel)]="editPayload.fuelType" name="editFuel">
+                <option value="Petrol">Petrol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Electric">Electric</option>
+                <option value="Hybrid">Hybrid</option>
+                <option value="CNG">CNG</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Status</label>
+            <select class="form-control" [(ngModel)]="editPayload.status" name="editStatus">
+              <option value="PENDING">PENDING</option>
+              <option value="ACTIVE">ACTIVE</option>
+              <option value="INACTIVE">INACTIVE</option>
+              <option value="BLOCKED">BLOCKED</option>
+            </select>
+          </div>
+
+          <div class="flex gap-2 mt-4" style="justify-content: flex-end;">
+            <button type="button" class="btn btn-outline" (click)="editMode = false">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      }
     </div>
   </div>
 }

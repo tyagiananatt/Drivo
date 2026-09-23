@@ -34,14 +34,22 @@ export class DriversService {
     const scope = await this.vendorsService.getAuthorizedScope(userVendorId);
     return this.prisma.driver.findMany({
       where: { vendorId: { in: scope } },
-      include: { documents: true, assignments: true, vendor: { select: { name: true } } }
+      include: { 
+        documents: true, 
+        assignments: { where: { status: 'ACTIVE' }, include: { vehicle: true } }, 
+        vendor: { select: { name: true } } 
+      }
     });
   }
 
   async findOne(id: string, userVendorId: string) {
     const driver = await this.prisma.driver.findUnique({
       where: { id },
-      include: { documents: true, assignments: { include: { vehicle: true } } }
+      include: { 
+        documents: true, 
+        assignments: { where: { status: 'ACTIVE' }, include: { vehicle: true } },
+        vendor: { select: { name: true } }
+      }
     });
     if (!driver) throw new NotFoundException('Driver not found');
     

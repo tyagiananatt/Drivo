@@ -14,6 +14,9 @@ import { ComplianceModule } from './compliance/compliance.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AuditInterceptor } from './auth/interceptors/audit.interceptor';
 import { AssignmentsModule } from './assignments/assignments.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { TripsModule } from './trips/trips.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -27,7 +30,10 @@ import { AssignmentsModule } from './assignments/assignments.module';
     DocumentsModule,
     ComplianceModule,
     NotificationsModule,
-    AssignmentsModule
+    AssignmentsModule,
+    AnalyticsModule,
+    TripsModule,
+    PaymentsModule
   ],
   controllers: [AppController],
   providers: [

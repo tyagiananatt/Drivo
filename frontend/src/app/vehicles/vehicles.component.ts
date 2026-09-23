@@ -66,4 +66,41 @@ export class VehiclesComponent implements OnInit {
       error: (err) => this.toastService.error('Error', err.error?.message || 'Failed to approve vehicle')
     });
   }
+
+  // PROFILE / EDIT MODAL
+  selectedVehicle: any = null;
+  editMode = false;
+  editPayload: any = {};
+
+  openVehicleProfile(vehicle: any) {
+    this.selectedVehicle = vehicle;
+    this.editMode = false;
+    this.editPayload = {
+      registrationNumber: vehicle.registrationNumber,
+      manufacturer: vehicle.manufacturer,
+      model: vehicle.model,
+      vehicleType: vehicle.vehicleType,
+      fuelType: vehicle.fuelType,
+      seatingCapacity: vehicle.seatingCapacity,
+      manufacturingYear: vehicle.manufacturingYear,
+      status: vehicle.status
+    };
+  }
+
+  closeVehicleProfile() {
+    this.selectedVehicle = null;
+    this.editMode = false;
+  }
+
+  updateVehicleProfile() {
+    this.apiService.updateVehicle(this.selectedVehicle.id, this.editPayload).subscribe({
+      next: () => {
+        this.toastService.success('Success', 'Vehicle profile updated!');
+        this.editMode = false;
+        this.loadVehicles();
+        this.closeVehicleProfile();
+      },
+      error: (err) => this.toastService.error('Update Failed', err.error?.message || 'Could not update vehicle.')
+    });
+  }
 }

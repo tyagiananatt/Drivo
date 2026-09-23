@@ -67,6 +67,8 @@ model Vendor {
   users     User[]
   drivers   Driver[]
   vehicles  Vehicle[]
+  trips     Trip[]
+  payments  Payment[]
   
   delegationsGranted Delegation[] @relation("DelegationFrom")
   delegationsReceived Delegation[] @relation("DelegationTo")
@@ -113,9 +115,14 @@ model Driver {
   licenseExpiryDate DateTime
   status            String   @default("PENDING") // PENDING, ACTIVE, INACTIVE, BLOCKED, REJECTED
   
+  isOnline          Boolean  @default(false)
+  currentLatitude   Float?
+  currentLongitude  Float?
+  
   vendor            Vendor   @relation(fields: [vendorId], references: [id])
   assignments       DriverVehicleAssignment[]
   documents         Document[]
+  trips             Trip[]
   
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -140,6 +147,7 @@ model Vehicle {
   vendor             Vendor   @relation(fields: [vendorId], references: [id])
   assignments        DriverVehicleAssignment[]
   documents          Document[]
+  trips              Trip[]
   
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
@@ -222,4 +230,50 @@ model AuditLog {
 
   @@index([vendorId])
   @@index([entity, entityId])
+}
+
+model Trip {
+  id              String   @id @default(uuid())
+  vendorId        String
+  driverId        String
+  vehicleId       String
+  status          String   @default("PENDING") // PENDING, ACTIVE, COMPLETED, CANCELLED
+  pickupLocation  String
+  dropoffLocation String
+  startTime       DateTime
+  endTime         DateTime?
+  estimatedPrice  Float
+  
+  vendor          Vendor   @relation(fields: [vendorId], references: [id])
+  driver          Driver   @relation(fields: [driverId], references: [id])
+  vehicle         Vehicle  @relation(fields: [vehicleId], references: [id])
+  payments        Payment[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([vendorId])
+  @@index([driverId])
+  @@index([vehicleId])
+  @@index([status])
+}
+
+model Payment {
+  id              String   @id @default(uuid())
+  tripId          String
+  vendorId        String
+  amount          Float
+  status          String   @default("PENDING") // PENDING, PAID, FAILED
+  paymentMethod   String
+  transactionId   String?  @unique
+  
+  trip            Trip     @relation(fields: [tripId], references: [id])
+  vendor          Vendor   @relation(fields: [vendorId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([tripId])
+  @@index([vendorId])
+  @@index([status])
 }

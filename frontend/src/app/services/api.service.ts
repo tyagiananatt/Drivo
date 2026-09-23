@@ -13,6 +13,10 @@ export class ApiService {
     return this.http.get<any>(`${this.apiUrl}/vendors/stats`);
   }
 
+  getAnalytics() {
+    return this.http.get<any>(`${this.apiUrl}/analytics/dashboard`);
+  }
+
   getVendorStats(id: string) {
     return this.http.get<any>(`${this.apiUrl}/vendors/${id}/stats`);
   }

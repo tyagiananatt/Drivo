@@ -98,4 +98,65 @@ export class DriversComponent implements OnInit {
       error: (err) => this.toastService.error('Error', err.error?.message || 'Failed to approve driver')
     });
   }
+
+  // PROFILE / EDIT MODAL
+  selectedDriver: any = null;
+  editMode = false;
+  editPayload: any = {};
+  newAssignmentVehicleId = '';
+
+  openDriverProfile(driver: any) {
+    console.log('Driver clicked:', driver);
+    this.selectedDriver = driver;
+    this.editMode = false;
+    this.newAssignmentVehicleId = '';
+    // Deep copy for editing
+    this.editPayload = { 
+      name: driver.name, 
+      phone: driver.phone, 
+      address: driver.address,
+      licenseNumber: driver.licenseNumber,
+      status: driver.status
+    };
+  }
+
+  closeDriverProfile() {
+    this.selectedDriver = null;
+    this.editMode = false;
+  }
+
+  updateDriverProfile() {
+    this.apiService.updateDriver(this.selectedDriver.id, this.editPayload).subscribe({
+      next: () => {
+        this.toastService.success('Success', 'Driver profile updated!');
+        this.editMode = false;
+        this.loadDrivers();
+        this.closeDriverProfile();
+      },
+      error: (err) => this.toastService.error('Update Failed', err.error?.message || 'Could not update driver.')
+    });
+  }
+
+  unassignVehicle(assignmentId: string) {
+    this.apiService.endAssignment(assignmentId).subscribe({
+      next: () => {
+        this.toastService.success('Success', 'Driver unassigned from vehicle.');
+        this.loadDrivers();
+        this.closeDriverProfile(); // close and refresh
+      },
+      error: (err) => this.toastService.error('Error', err.error?.message || 'Failed to unassign vehicle.')
+    });
+  }
+
+  assignNewVehicle() {
+    if (!this.newAssignmentVehicleId) return;
+    this.apiService.assignDriver(this.newAssignmentVehicleId, this.selectedDriver.id).subscribe({
+      next: () => {
+        this.toastService.success('Success', 'Driver assigned to new vehicle!');
+        this.loadDrivers();
+        this.closeDriverProfile();
+      },
+      error: (err) => this.toastService.error('Error', err.error?.message || 'Failed to assign vehicle.')
+    });
+  }
 }

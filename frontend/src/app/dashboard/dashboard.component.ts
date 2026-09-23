@@ -22,6 +22,10 @@ export class DashboardComponent implements OnInit {
   vehicleStatusBreakdown = { active: 0, pending: 0, inactive: 0 };
   driverAssignment = { assigned: 0, unassigned: 0 };
   recentOnboardings: any[] = [];
+  
+  onlineDrivers = 0;
+  activeTrips = 0;
+  totalRevenue = 0;
 
   vendorName = 'Super Vendor';
   role = 'Super Vendor';
@@ -114,6 +118,14 @@ export class DashboardComponent implements OnInit {
       error: (err) => {
         const msg = err.error?.message || err.message || 'Failed to load stats';
         this.toastService.error('Error', msg);
+      }
+    });
+
+    this.apiService.getAnalytics().subscribe({
+      next: (data) => {
+        this.onlineDrivers = data.onlineDrivers;
+        this.activeTrips = data.activeTrips;
+        this.totalRevenue = data.totalRevenue;
       }
     });
 

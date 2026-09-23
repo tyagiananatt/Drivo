@@ -26,7 +26,7 @@
       </thead>
       <tbody>
         @for (d of drivers; track d.id) {
-          <tr>
+          <tr (click)="openDriverProfile(d)" style="cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
             <td style="font-weight: 700;">{{ d.name }}</td>
             <td>
               <div style="font-weight: 500;">{{ d.phone }}</div>
@@ -136,6 +136,119 @@
           <button type="submit" class="btn btn-primary">Save Driver</button>
         </div>
       </form>
+    </div>
+  </div>
+}
+
+@if (selectedDriver) {
+  <div class="modal-backdrop" (click)="closeDriverProfile()">
+    <div class="modal-content" style="max-width: 600px;" (click)="$event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px;">
+        <h2 class="title" style="margin: 0;">Driver Profile</h2>
+        <button class="btn btn-outline" (click)="closeDriverProfile()">Close</button>
+      </div>
+
+      <!-- VIEW MODE -->
+      @if (!editMode) {
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; justify-content: space-between;">
+            <div>
+              <div style="font-size: 24px; font-weight: 700;">{{ selectedDriver.name }}</div>
+              <div style="color: var(--text-muted);">{{ selectedDriver.email }} | {{ selectedDriver.phone }}</div>
+              <div style="color: var(--primary); font-size: 14px; margin-top: 4px;">Vendor: {{ selectedDriver.vendor?.name || 'Unknown' }}</div>
+            </div>
+            <div>
+              <span class="badge" [ngClass]="{'badge-success': selectedDriver.status === 'ACTIVE', 'badge-warning': selectedDriver.status === 'PENDING', 'badge-danger': selectedDriver.status === 'INACTIVE' || selectedDriver.status === 'BLOCKED'}">
+                {{ selectedDriver.status }}
+              </span>
+            </div>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: var(--border-radius);">
+            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">License Information</div>
+            <div style="font-weight: 500; font-size: 16px;">{{ selectedDriver.licenseNumber }}</div>
+            <div style="font-size: 14px; color: var(--primary);">Expires: {{ selectedDriver.licenseExpiryDate | date }}</div>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: var(--border-radius);">
+            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Address & Contact</div>
+            <div style="font-size: 14px;">{{ selectedDriver.address }}</div>
+            <div style="font-size: 14px; color: var(--text-muted);">Emergency: {{ selectedDriver.emergencyContact }}</div>
+          </div>
+
+          <!-- Assignment Section -->
+          <div style="border: 1px solid var(--border); padding: 16px; border-radius: var(--border-radius);">
+            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Vehicle Assignment</div>
+            
+            @if (selectedDriver.assignments && selectedDriver.assignments.length > 0) {
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-weight: 700; color: var(--primary); font-size: 18px;">{{ selectedDriver.assignments[0].vehicle?.registrationNumber || 'Unknown Vehicle' }}</div>
+                  <div style="font-size: 14px; color: var(--text-muted);">{{ selectedDriver.assignments[0].vehicle?.manufacturer }} {{ selectedDriver.assignments[0].vehicle?.model }}</div>
+                </div>
+                <button *ngIf="authService.hasPermission('ASSIGN_DRIVERS') || authService.hasPermission('VEHICLE_UPDATE')" class="btn btn-outline" style="color: #f87171; border-color: #f87171;" (click)="unassignVehicle(selectedDriver.assignments[0].id)">Unassign</button>
+              </div>
+            } @else {
+              <div style="color: var(--text-muted); margin-bottom: 12px;">Currently not assigned to any vehicle.</div>
+              <div *ngIf="authService.hasPermission('ASSIGN_DRIVERS') || authService.hasPermission('VEHICLE_UPDATE')" style="display: flex; gap: 8px;">
+                <select class="form-control" [(ngModel)]="newAssignmentVehicleId" style="flex: 1;">
+                  <option value="">-- Select a Vehicle to Assign --</option>
+                  @for (v of availableVehicles; track v.id) {
+                    <option [value]="v.id">{{ v.registrationNumber }} ({{ v.manufacturer }} {{ v.model }})</option>
+                  }
+                </select>
+                <button class="btn btn-primary" (click)="assignNewVehicle()" [disabled]="!newAssignmentVehicleId">Assign</button>
+              </div>
+            }
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+            <button *ngIf="authService.hasPermission('DRIVER_UPDATE')" class="btn btn-outline" (click)="editMode = true">Edit Driver Details</button>
+          </div>
+        </div>
+      }
+
+      <!-- EDIT MODE -->
+      @if (editMode) {
+        <form (ngSubmit)="updateDriverProfile()">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" class="form-control" [(ngModel)]="editPayload.name" name="editName" required>
+          </div>
+          
+          <div class="flex gap-4">
+            <div class="form-group" style="flex: 1;">
+              <label>Phone Number</label>
+              <input type="text" class="form-control" [(ngModel)]="editPayload.phone" name="editPhone" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label>License Number</label>
+              <input type="text" class="form-control" [(ngModel)]="editPayload.licenseNumber" name="editLicense" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" class="form-control" [(ngModel)]="editPayload.address" name="editAddress" required>
+          </div>
+
+          <div class="form-group">
+            <label>Status</label>
+            <select class="form-control" [(ngModel)]="editPayload.status" name="editStatus">
+              <option value="PENDING">PENDING</option>
+              <option value="ACTIVE">ACTIVE</option>
+              <option value="INACTIVE">INACTIVE</option>
+              <option value="BLOCKED">BLOCKED</option>
+              <option value="REJECTED">REJECTED</option>
+            </select>
+          </div>
+
+          <div class="flex gap-2 mt-4" style="justify-content: flex-end;">
+            <button type="button" class="btn btn-outline" (click)="editMode = false">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      }
     </div>
   </div>
 }
