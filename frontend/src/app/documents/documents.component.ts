@@ -5,6 +5,7 @@ import { ApiService } from '../services/api.service';
 import { ToastService } from '../services/toast.service';
 import { AuthService } from '../services/auth.service';
 import { forkJoin } from 'rxjs';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-documents',
@@ -32,11 +33,14 @@ export class DocumentsComponent implements OnInit {
   // Verify State
   documents: any[] = [];
   isLoadingDocs = false;
+  previewUrl: SafeResourceUrl | null = null;
+  showPreview = false;
 
   constructor(
     private apiService: ApiService,
     private toastService: ToastService,
-    public authService: AuthService
+    public authService: AuthService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
@@ -149,5 +153,22 @@ export class DocumentsComponent implements OnInit {
         this.toastService.error('Error', err.error?.message || 'Verification failed');
       }
     });
+  }
+
+  viewDocument(id: string) {
+    this.apiService.getDocumentUrl(id).subscribe({
+      next: (res) => {
+        this.previewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(res.url);
+        this.showPreview = true;
+      },
+      error: (err) => {
+        this.toastService.error('Error', err.error?.message || 'Failed to load document preview');
+      }
+    });
+  }
+
+  closePreview() {
+    this.showPreview = false;
+    this.previewUrl = null;
   }
 }

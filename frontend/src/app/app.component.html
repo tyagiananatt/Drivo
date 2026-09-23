@@ -17,6 +17,7 @@
         <a routerLink="/vehicles" routerLinkActive="active" class="nav-pill" *ngIf="authService.hasPermission('VEHICLE_VIEW')">Vehicles</a>
         <a routerLink="/drivers" routerLinkActive="active" class="nav-pill" *ngIf="authService.hasPermission('DRIVER_VIEW')">Drivers</a>
         <a routerLink="/documents" routerLinkActive="active" class="nav-pill" *ngIf="authService.hasPermission('DOCUMENT_UPLOAD') || authService.hasPermission('DOCUMENT_VERIFY')">Documents</a>
+        <a routerLink="/assignments" routerLinkActive="active" class="nav-pill">Assignments</a>
         
         <a routerLink="/compliance" routerLinkActive="active" class="nav-pill" *ngIf="authService.hasPermission('COMPLIANCE_VIEW')">Compliance</a>
         <a routerLink="/reports" routerLinkActive="active" class="nav-pill" *ngIf="authService.hasPermission('REPORTS_VIEW')">Reports</a>

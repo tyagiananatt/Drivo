@@ -1,129 +1,170 @@
 @if (isLoading) {
-  <div style="display: flex; justify-content: center; align-items: center; height: 300px;">
-    <p style="color: var(--text-muted);">Loading vendor details...</p>
-  </div>
+<div style="display: flex; justify-content: center; align-items: center; height: 300px;">
+  <p style="color: var(--text-muted);">Loading vendor details...</p>
+</div>
 } @else {
-  <div style="margin-bottom: 24px;">
-    <a routerLink="/hierarchy" class="btn btn-outline" style="padding: 6px 12px; font-size: 13px;">← Back to Hierarchy</a>
+<div style="margin-bottom: 24px;">
+  <a routerLink="/hierarchy" class="btn btn-outline" style="padding: 6px 12px; font-size: 13px;">← Back to Hierarchy</a>
+</div>
+
+<div style="margin-bottom: 32px;">
+  <!-- Vendor Hero Profile -->
+  <div class="card"
+    style="margin-bottom: 0; min-height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; overflow: hidden; background: radial-gradient(circle at center, rgba(212,255,0,0.05) 0%, rgba(0,0,0,0.8) 100%);">
+
+    <div style="position: relative; z-index: 2; display: flex; flex-direction: column; gap: 16px;">
+      <div>
+        <div style="display: flex; justify-content: center; margin-bottom: 12px;">
+          <span class="badge" [ngClass]="vendorDetails.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'"
+            style="font-size: 12px; padding: 4px 12px;">
+            {{ vendorDetails.status }}
+          </span>
+        </div>
+        <h1 class="title"
+          style="font-size: 56px; font-weight: 900; letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase;">
+          {{ vendorDetails.name }}
+        </h1>
+        <div style="font-size: 16px; color: var(--text-muted); font-family: 'Orbitron', sans-serif;">
+          Level {{ vendorDetails.level }} Sub-Vendor • {{ vendorDetails.email }}
+        </div>
+      </div>
+
+      <!-- Hero Data Cards for this specific vendor -->
+      <div style="display: flex; gap: 24px; justify-content: center; margin-top: 24px; flex-wrap: wrap;">
+        <div
+          style="background: rgba(0,0,0,0.6); backdrop-filter: blur(16px); padding: 16px 32px; border-radius: var(--border-radius); border: 1px solid var(--border);">
+          <div
+            style="font-size: 12px; color: var(--text-secondary); font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+            Total Vehicles</div>
+          <div style="font-size: 32px; font-weight: 700; color: var(--text-primary);">{{ stats.totalVehicles }}</div>
+        </div>
+
+        <div
+          style="background: rgba(0,0,0,0.6); backdrop-filter: blur(16px); padding: 16px 32px; border-radius: var(--border-radius); border: 1px solid var(--border);">
+          <div
+            style="font-size: 12px; color: var(--text-secondary); font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+            Active Drivers</div>
+          <div style="font-size: 32px; font-weight: 700; color: var(--text-primary);">{{ stats.activeDrivers }}</div>
+        </div>
+
+        <div
+          style="background: rgba(0,0,0,0.6); backdrop-filter: blur(16px); padding: 16px 32px; border-radius: var(--border-radius); border: 1px solid var(--border);">
+          <div
+            style="font-size: 12px; color: var(--text-secondary); font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+            Sub Vendors</div>
+          <div style="font-size: 32px; font-weight: 700; color: var(--text-primary);">{{ stats.subVendors }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 24px;">
+  <!-- Column 1: Vehicle Status -->
+  <div class="card" style="margin-bottom: 0;">
+    <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 20px;">Vehicle Status</h2>
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 12px; height: 12px; border-radius: 50%; background: #4ade80;"></div>
+          <span style="color: var(--text-secondary); font-size: 14px;">Active</span>
+        </div>
+        <span style="font-size: 20px; font-weight: 700; color: var(--text-primary);">{{
+          stats.vehicleStatusBreakdown.active }}</span>
+      </div>
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 12px; height: 12px; border-radius: 50%; background: #facc15;"></div>
+          <span style="color: var(--text-secondary); font-size: 14px;">Pending</span>
+        </div>
+        <span style="font-size: 20px; font-weight: 700; color: var(--text-primary);">{{
+          stats.vehicleStatusBreakdown.pending }}</span>
+      </div>
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 12px; height: 12px; border-radius: 50%; background: #f87171;"></div>
+          <span style="color: var(--text-secondary); font-size: 14px;">Inactive</span>
+        </div>
+        <span style="font-size: 20px; font-weight: 700; color: var(--text-primary);">{{
+          stats.vehicleStatusBreakdown.inactive }}</span>
+      </div>
+    </div>
   </div>
 
-  <div style="margin-bottom: 32px;">
-    <!-- Vendor Hero Profile -->
-    <div class="card" style="margin-bottom: 0; min-height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; overflow: hidden; background: radial-gradient(circle at center, rgba(212,255,0,0.05) 0%, rgba(0,0,0,0.8) 100%);">
-      
-      <div style="position: relative; z-index: 2; display: flex; flex-direction: column; gap: 16px;">
-        <div>
-          <div style="display: flex; justify-content: center; margin-bottom: 12px;">
-            <span class="badge" [ngClass]="vendorDetails.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'" style="font-size: 12px; padding: 4px 12px;">
-              {{ vendorDetails.status }}
+  <!-- Column 2: Driver Assignments -->
+  <div class="card" style="margin-bottom: 0;">
+    <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 20px;">Driver Availability</h2>
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div
+        style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(212,255,0,0.05); border: 1px solid rgba(212,255,0,0.2); border-radius: 8px; padding: 24px;">
+        <div style="font-size: 36px; font-weight: 700; color: var(--primary);">{{ stats.driverAssignment.unassigned }}
+        </div>
+        <div
+          style="color: var(--text-secondary); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px;">
+          Unassigned</div>
+      </div>
+      <div
+        style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 16px;">
+        <div style="font-size: 24px; font-weight: 700; color: var(--text-primary);">{{ stats.driverAssignment.assigned
+          }}</div>
+        <div
+          style="color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">
+          Assigned</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Column 3: Recent Onboardings -->
+  <div class="card" style="margin-bottom: 0;">
+    <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 20px;">Recent Activity</h2>
+    @if (stats.recentOnboardings.length === 0) {
+    <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+      <p>No recent drivers or vehicles found.</p>
+    </div>
+    }
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      @for (item of stats.recentOnboardings; track item.name) {
+      <div
+        style="display: flex; gap: 16px; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+        <div
+          style="width: 40px; height: 40px; border-radius: 8px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
+          @if (item.type === 'Vehicle') {
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
+            <path d="M15 18H9" />
+            <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" />
+            <circle cx="17" cy="18" r="2" />
+            <circle cx="7" cy="18" r="2" />
+          </svg>
+          } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          }
+        </div>
+        <div style="flex: 1;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 600; font-size: 15px; color: var(--text-primary);">{{ item.name }}</span>
+            <span class="badge"
+              [ngClass]="{'badge-success': item.status === 'ACTIVE', 'badge-warning': item.status === 'PENDING', 'badge-danger': item.status === 'INACTIVE'}"
+              style="font-size: 10px; padding: 2px 6px;">
+              {{ item.status }}
             </span>
           </div>
-          <h1 class="title" style="font-size: 56px; font-weight: 900; letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase;">
-            {{ vendorDetails.name }}
-          </h1>
-          <div style="font-size: 16px; color: var(--text-muted); font-family: 'Orbitron', sans-serif;">
-            Level {{ vendorDetails.level }} Sub-Vendor • {{ vendorDetails.email }}
-          </div>
-        </div>
-        
-        <!-- Hero Data Cards for this specific vendor -->
-        <div style="display: flex; gap: 24px; justify-content: center; margin-top: 24px; flex-wrap: wrap;">
-          <div style="background: rgba(0,0,0,0.6); backdrop-filter: blur(16px); padding: 16px 32px; border-radius: var(--border-radius); border: 1px solid var(--border);">
-            <div style="font-size: 12px; color: var(--text-secondary); font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Total Vehicles</div>
-            <div style="font-size: 32px; font-weight: 700; color: var(--text-primary);">{{ stats.totalVehicles }}</div>
-          </div>
-          
-          <div style="background: rgba(0,0,0,0.6); backdrop-filter: blur(16px); padding: 16px 32px; border-radius: var(--border-radius); border: 1px solid var(--border);">
-            <div style="font-size: 12px; color: var(--text-secondary); font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Active Drivers</div>
-            <div style="font-size: 32px; font-weight: 700; color: var(--text-primary);">{{ stats.activeDrivers }}</div>
-          </div>
-          
-          <div style="background: rgba(0,0,0,0.6); backdrop-filter: blur(16px); padding: 16px 32px; border-radius: var(--border-radius); border: 1px solid var(--border);">
-            <div style="font-size: 12px; color: var(--text-secondary); font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Sub Vendors</div>
-            <div style="font-size: 32px; font-weight: 700; color: var(--text-primary);">{{ stats.subVendors }}</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+            <div style="font-size: 13px; color: var(--text-secondary);">{{ item.type }} • {{ item.detail }}</div>
+            <div style="font-size: 12px; color: var(--text-muted);">{{ item.date | date:'shortDate' }}</div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 24px;">
-    <!-- Column 1: Vehicle Status -->
-    <div class="card" style="margin-bottom: 0;">
-      <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 20px;">Vehicle Status</h2>
-      <div style="display: flex; flex-direction: column; gap: 16px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 12px; height: 12px; border-radius: 50%; background: #4ade80;"></div>
-            <span style="color: var(--text-secondary); font-size: 14px;">Active</span>
-          </div>
-          <span style="font-size: 20px; font-weight: 700; color: var(--text-primary);">{{ stats.vehicleStatusBreakdown.active }}</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 12px; height: 12px; border-radius: 50%; background: #facc15;"></div>
-            <span style="color: var(--text-secondary); font-size: 14px;">Pending</span>
-          </div>
-          <span style="font-size: 20px; font-weight: 700; color: var(--text-primary);">{{ stats.vehicleStatusBreakdown.pending }}</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 12px; height: 12px; border-radius: 50%; background: #f87171;"></div>
-            <span style="color: var(--text-secondary); font-size: 14px;">Inactive</span>
-          </div>
-          <span style="font-size: 20px; font-weight: 700; color: var(--text-primary);">{{ stats.vehicleStatusBreakdown.inactive }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Column 2: Driver Assignments -->
-    <div class="card" style="margin-bottom: 0;">
-      <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 20px;">Driver Availability</h2>
-      <div style="display: flex; flex-direction: column; gap: 16px;">
-        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(212,255,0,0.05); border: 1px solid rgba(212,255,0,0.2); border-radius: 8px; padding: 24px;">
-          <div style="font-size: 36px; font-weight: 700; color: var(--primary);">{{ stats.driverAssignment.unassigned }}</div>
-          <div style="color: var(--text-secondary); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px;">Unassigned</div>
-        </div>
-        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 16px;">
-          <div style="font-size: 24px; font-weight: 700; color: var(--text-primary);">{{ stats.driverAssignment.assigned }}</div>
-          <div style="color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Assigned</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Column 3: Recent Onboardings -->
-    <div class="card" style="margin-bottom: 0;">
-      <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 20px;">Recent Activity</h2>
-      @if (stats.recentOnboardings.length === 0) {
-        <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
-          <p>No recent drivers or vehicles found.</p>
-        </div>
       }
-      <div style="display: flex; flex-direction: column; gap: 16px;">
-        @for (item of stats.recentOnboardings; track item.name) {
-          <div style="display: flex; gap: 16px; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
-            <div style="width: 40px; height: 40px; border-radius: 8px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
-              @if (item.type === 'Vehicle') {
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
-              } @else {
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              }
-            </div>
-            <div style="flex: 1;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 600; font-size: 15px; color: var(--text-primary);">{{ item.name }}</span>
-                <span class="badge" [ngClass]="{'badge-success': item.status === 'ACTIVE', 'badge-warning': item.status === 'PENDING', 'badge-danger': item.status === 'INACTIVE'}" style="font-size: 10px; padding: 2px 6px;">
-                  {{ item.status }}
-                </span>
-              </div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
-                <div style="font-size: 13px; color: var(--text-secondary);">{{ item.type }} • {{ item.detail }}</div>
-                <div style="font-size: 12px; color: var(--text-muted);">{{ item.date | date:'shortDate' }}</div>
-              </div>
-            </div>
-          </div>
-        }
-      </div>
     </div>
   </div>
+</div>
 }

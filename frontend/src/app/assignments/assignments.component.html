@@ -1,0 +1,84 @@
+<div class="card" style="margin-bottom: 24px;">
+  <div class="card-header" style="margin-bottom: 0;">
+    <div>
+      <h1 class="title">Dispatch & Assignments</h1>
+      <p>Assign drivers to vehicles.</p>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 24px;">
+  <h2 class="title" style="margin-bottom: 24px; font-size: 18px;">Create New Assignment</h2>
+  
+  <div class="flex gap-4">
+    <div class="form-group" style="flex: 1;">
+      <label>Select Driver</label>
+      <select class="form-control" [(ngModel)]="selectedDriverId">
+        <option value="">-- Select Driver --</option>
+        @for (d of drivers; track d.id) {
+          <option [value]="d.id">{{ d.name }} ({{ d.phone }})</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group" style="flex: 1;">
+      <label>Select Vehicle</label>
+      <select class="form-control" [(ngModel)]="selectedVehicleId">
+        <option value="">-- Select Vehicle --</option>
+        @for (v of vehicles; track v.id) {
+          <option [value]="v.id">{{ v.registrationNumber }} ({{ v.manufacturer }} {{ v.model }})</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group" style="display: flex; align-items: flex-end;">
+      <button class="btn btn-primary" (click)="assign()" [disabled]="isAssigning || !selectedDriverId || !selectedVehicleId">
+        {{ isAssigning ? 'Assigning...' : 'Assign to Vehicle' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 class="title" style="margin-bottom: 24px; font-size: 18px;">Active Assignments</h2>
+  
+  @if (isLoading) {
+    <div style="text-align: center; padding: 40px; color: var(--text-muted);">Loading...</div>
+  } @else {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Driver</th>
+            <th>Vehicle</th>
+            <th>Assigned Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of assignments; track a.id) {
+            <tr>
+              <td style="font-weight: 600; color: var(--primary);">{{ a.driver?.name }}</td>
+              <td>{{ a.vehicle?.registrationNumber }}</td>
+              <td>{{ a.assignedAt | date:'medium' }}</td>
+              <td>
+                <span class="badge" [ngClass]="a.status === 'ACTIVE' ? 'badge-success' : 'badge-warning'">
+                  {{ a.status }}
+                </span>
+              </td>
+              <td>
+                @if (a.status === 'ACTIVE') {
+                  <button class="btn btn-outline" style="border-color: #f87171; color: #f87171; padding: 4px 12px; font-size: 12px;" (click)="endAssignment(a.id)">End Assignment</button>
+                }
+              </td>
+            </tr>
+          }
+          @if (assignments.length === 0) {
+            <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 32px;">No active assignments.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

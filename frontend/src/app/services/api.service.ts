@@ -40,6 +40,10 @@ export class ApiService {
     return this.http.post<any>(`${this.apiUrl}/documents/upload`, formData);
   }
 
+  getDocumentUrl(id: string) {
+    return this.http.get<{ url: string }>(`${this.apiUrl}/documents/${id}/url`);
+  }
+
   verifyDocument(id: string, status: string) {
     return this.http.patch<any>(`${this.apiUrl}/documents/${id}/verify`, { status });
   }
@@ -91,5 +95,18 @@ export class ApiService {
 
   deleteVendor(id: string) {
     return this.http.delete<any>(`${this.apiUrl}/vendors/${id}`);
+  }
+
+  // Assignments
+  getAssignments() {
+    return this.http.get<any[]>(`${this.apiUrl}/assignments`);
+  }
+
+  createAssignment(driverId: string, vehicleId: string) {
+    return this.http.post<any>(`${this.apiUrl}/assignments`, { driverId, vehicleId });
+  }
+
+  endAssignment(id: string) {
+    return this.http.patch<any>(`${this.apiUrl}/assignments/${id}/end`, {});
   }
 }

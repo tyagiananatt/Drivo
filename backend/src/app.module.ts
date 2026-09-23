@@ -13,6 +13,7 @@ import { DocumentsModule } from './documents/documents.module';
 import { ComplianceModule } from './compliance/compliance.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AuditInterceptor } from './auth/interceptors/audit.interceptor';
+import { AssignmentsModule } from './assignments/assignments.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { AuditInterceptor } from './auth/interceptors/audit.interceptor';
     VehiclesModule,
     DocumentsModule,
     ComplianceModule,
-    NotificationsModule
+    NotificationsModule,
+    AssignmentsModule
   ],
   controllers: [AppController],
   providers: [

@@ -6,8 +6,10 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { authGuard } from './guards/auth.guard';
 
+import { LandingComponent } from './landing/landing.component';
+
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', component: LandingComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
@@ -20,4 +22,5 @@ export const routes: Routes = [
   { path: 'compliance', loadComponent: () => import('./compliance/compliance.component').then(m => m.ComplianceComponent), canActivate: [authGuard] },
   { path: 'reports', loadComponent: () => import('./reports/reports.component').then(m => m.ReportsComponent), canActivate: [authGuard] },
   { path: 'profile', loadComponent: () => import('./profile/profile.component').then(m => m.ProfileComponent), canActivate: [authGuard] },
+  { path: 'assignments', loadComponent: () => import('./assignments/assignments.component').then(m => m.AssignmentsComponent), canActivate: [authGuard] },
 ];

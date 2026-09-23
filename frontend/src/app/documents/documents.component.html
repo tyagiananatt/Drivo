@@ -120,8 +120,8 @@
                   <td><span class="badge badge-warning">{{ doc.status }}</span></td>
                   <td>
                     <div style="display: flex; gap: 8px;">
-                      <!-- Would normally link to the actual file preview here -->
-                      <a [href]="'http://localhost:3000/api/documents/' + doc.id + '/url'" target="_blank" class="btn btn-outline" style="padding: 4px 8px; font-size: 12px;">View</a>
+                      <!-- Document Preview Button -->
+                      <button class="btn btn-outline" style="padding: 4px 8px; font-size: 12px;" (click)="viewDocument(doc.id)">View</button>
                       <button class="btn" style="background: rgba(74,222,128,0.2); color: #4ade80; padding: 4px 8px; font-size: 12px; border: 1px solid #4ade80;" (click)="verify(doc.id, 'VERIFIED')">Approve</button>
                       <button class="btn" style="background: rgba(248,113,113,0.2); color: #f87171; padding: 4px 8px; font-size: 12px; border: 1px solid #f87171;" (click)="verify(doc.id, 'REJECTED')">Reject</button>
                     </div>
@@ -136,5 +136,26 @@
         </table>
       </div>
     }
+  </div>
+}
+
+<!-- DOCUMENT PREVIEW MODAL -->
+@if (showPreview) {
+  <div class="modal-backdrop" style="z-index: 1000;" (click)="closePreview()">
+    <div class="modal-content" style="max-width: 800px; width: 90%; height: 80vh; display: flex; flex-direction: column;" (click)="$event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 class="title" style="margin: 0; font-size: 20px;">Document Preview</h2>
+        <button class="btn btn-outline" style="padding: 4px 12px;" (click)="closePreview()">Close</button>
+      </div>
+      <div style="flex: 1; background: #000; border-radius: 8px; overflow: hidden; position: relative;">
+        @if (previewUrl) {
+          <iframe [src]="previewUrl" style="width: 100%; height: 100%; border: none;"></iframe>
+        } @else {
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-muted);">
+            Loading preview...
+          </div>
+        }
+      </div>
+    </div>
   </div>
 }
