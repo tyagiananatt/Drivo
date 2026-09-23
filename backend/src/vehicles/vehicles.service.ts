@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { VendorsService } from '../vendors/vendors.service';
 
@@ -15,18 +15,25 @@ export class VehiclesService {
     seatingCapacity: number; fuelType: string; 
     manufacturingYear: number;
   }) {
-    return this.prisma.vehicle.create({
-      data: {
-        vendorId,
-        registrationNumber: data.registrationNumber,
-        manufacturer: data.manufacturer,
-        model: data.model,
-        vehicleType: data.vehicleType,
-        seatingCapacity: data.seatingCapacity,
-        fuelType: data.fuelType,
-        manufacturingYear: data.manufacturingYear,
+    try {
+      return await this.prisma.vehicle.create({
+        data: {
+          vendorId,
+          registrationNumber: data.registrationNumber,
+          manufacturer: data.manufacturer,
+          model: data.model,
+          vehicleType: data.vehicleType,
+          seatingCapacity: data.seatingCapacity,
+          fuelType: data.fuelType,
+          manufacturingYear: data.manufacturingYear,
+        }
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        throw new BadRequestException('A vehicle with this registration number already exists.');
       }
-    });
+      throw error;
+    }
   }
 
   async findAll(userVendorId: string) {

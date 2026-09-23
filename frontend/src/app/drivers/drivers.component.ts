@@ -68,24 +68,27 @@ export class DriversComponent implements OnInit {
           this.apiService.assignDriver(vehicleIdToAssign, createdDriver.id).subscribe({
             next: () => {
               this.toastService.success('Success', 'Driver created & assigned to vehicle!');
-              this.finishCreation();
+              this.finishCreation(createdDriver);
             },
             error: (err) => {
               this.toastService.warning('Partial Success', 'Driver created, but vehicle assignment failed: ' + (err.error?.message || err.message));
-              this.finishCreation();
+              this.finishCreation(createdDriver);
             }
           });
         } else {
           this.toastService.success('Success', 'Driver added successfully!');
-          this.finishCreation();
+          this.finishCreation(createdDriver);
         }
       },
       error: (err) => this.toastService.error('Creation Failed', err.error?.message || 'Failed to add driver')
     });
   }
 
-  finishCreation() {
+  finishCreation(createdDriver?: any) {
     this.closeAddModal();
+    if (createdDriver) {
+      this.drivers = [createdDriver, ...this.drivers];
+    }
     this.loadDrivers();
   }
 

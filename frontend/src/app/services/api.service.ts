@@ -57,6 +57,14 @@ export class ApiService {
     return this.http.get<any>(`${this.apiUrl}/vendors/${id}`);
   }
 
+  getAllVendorsAdmin() {
+    return this.http.get<any[]>(`${this.apiUrl}/vendors/all`);
+  }
+
+  deleteVendorAdmin(id: string) {
+    return this.http.delete<any>(`${this.apiUrl}/vendors/${id}`);
+  }
+
   getVendorTree() {
     return this.http.get<any>(`${this.apiUrl}/vendors/my-tree`);
   }

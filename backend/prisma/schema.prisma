@@ -16,7 +16,7 @@ model User {
   roleId    String
   vendorId  String?
   role      Role     @relation(fields: [roleId], references: [id])
-  vendor    Vendor?  @relation(fields: [vendorId], references: [id])
+  vendor    Vendor?  @relation(fields: [vendorId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
@@ -61,7 +61,7 @@ model Vendor {
   status    String   @default("ACTIVE")
   parentId  String?
   
-  parent    Vendor?  @relation("VendorHierarchy", fields: [parentId], references: [id])
+  parent    Vendor?  @relation("VendorHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
   children  Vendor[] @relation("VendorHierarchy")
   
   users     User[]
@@ -90,8 +90,8 @@ model Delegation {
   endDate      DateTime?
   createdBy    String
   
-  fromVendor   Vendor     @relation("DelegationFrom", fields: [fromVendorId], references: [id])
-  toVendor     Vendor     @relation("DelegationTo", fields: [toVendorId], references: [id])
+  fromVendor   Vendor     @relation("DelegationFrom", fields: [fromVendorId], references: [id], onDelete: Cascade)
+  toVendor     Vendor     @relation("DelegationTo", fields: [toVendorId], references: [id], onDelete: Cascade)
   permission   Permission @relation(fields: [permissionId], references: [id])
   
   createdAt    DateTime   @default(now())
@@ -119,7 +119,7 @@ model Driver {
   currentLatitude   Float?
   currentLongitude  Float?
   
-  vendor            Vendor   @relation(fields: [vendorId], references: [id])
+  vendor            Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
   assignments       DriverVehicleAssignment[]
   documents         Document[]
   trips             Trip[]
@@ -144,7 +144,7 @@ model Vehicle {
   manufacturingYear  Int
   status             String   @default("PENDING") // PENDING, ACTIVE, INACTIVE, BLOCKED
   
-  vendor             Vendor   @relation(fields: [vendorId], references: [id])
+  vendor             Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
   assignments        DriverVehicleAssignment[]
   documents          Document[]
   trips              Trip[]
@@ -165,8 +165,8 @@ model DriverVehicleAssignment {
   unassignedAt DateTime?
   assignedBy   String
   
-  driver       Driver    @relation(fields: [driverId], references: [id])
-  vehicle      Vehicle   @relation(fields: [vehicleId], references: [id])
+  driver       Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  vehicle      Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 
   @@index([driverId])
   @@index([vehicleId])
@@ -188,8 +188,8 @@ model Document {
   driverId        String?
   vehicleId       String?
   
-  driver          Driver?   @relation(fields: [driverId], references: [id])
-  vehicle         Vehicle?  @relation(fields: [vehicleId], references: [id])
+  driver          Driver?   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  vehicle         Vehicle?  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -224,7 +224,7 @@ model AuditLog {
   oldValue  String?  @db.Text
   newValue  String?  @db.Text
   
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   createdAt DateTime @default(now())
 
@@ -244,9 +244,9 @@ model Trip {
   endTime         DateTime?
   estimatedPrice  Float
   
-  vendor          Vendor   @relation(fields: [vendorId], references: [id])
-  driver          Driver   @relation(fields: [driverId], references: [id])
-  vehicle         Vehicle  @relation(fields: [vehicleId], references: [id])
+  vendor          Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  driver          Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  vehicle         Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   payments        Payment[]
   
   createdAt       DateTime @default(now())
@@ -267,8 +267,8 @@ model Payment {
   paymentMethod   String
   transactionId   String?  @unique
   
-  trip            Trip     @relation(fields: [tripId], references: [id])
-  vendor          Vendor   @relation(fields: [vendorId], references: [id])
+  trip            Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  vendor          Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

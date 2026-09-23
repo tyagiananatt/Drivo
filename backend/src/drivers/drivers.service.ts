@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { VendorsService } from '../vendors/vendors.service';
 
@@ -15,19 +15,26 @@ export class DriversService {
     emergencyContact: string; licenseNumber: string; 
     licenseExpiryDate: Date 
   }) {
-    return this.prisma.driver.create({
-      data: {
-        vendorId,
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        dateOfBirth: data.dateOfBirth,
-        address: data.address,
-        emergencyContact: data.emergencyContact,
-        licenseNumber: data.licenseNumber,
-        licenseExpiryDate: data.licenseExpiryDate,
+    try {
+      return await this.prisma.driver.create({
+        data: {
+          vendorId,
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          dateOfBirth: data.dateOfBirth,
+          address: data.address,
+          emergencyContact: data.emergencyContact,
+          licenseNumber: data.licenseNumber,
+          licenseExpiryDate: data.licenseExpiryDate,
+        }
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        throw new BadRequestException('A driver with this email, phone number, or license number already exists.');
       }
-    });
+      throw error;
+    }
   }
 
   async findAll(userVendorId: string) {

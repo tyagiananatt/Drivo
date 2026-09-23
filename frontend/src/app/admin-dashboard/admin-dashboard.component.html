@@ -1,0 +1,83 @@
+<div class="p-4 sm:p-6 lg:p-8 animate-fade-in max-w-7xl mx-auto">
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-black tracking-tight text-white uppercase drop-shadow-neon">Admin Dashboard</h1>
+      <p class="text-gray-400 mt-2">Manage and monitor all vendors and super vendors on the platform.</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="flex justify-center p-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+  </div>
+
+  <div *ngIf="error" class="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl mb-6">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!isLoading && vendors.length > 0" class="glass-panel overflow-hidden rounded-2xl border border-white/5">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-gray-300">
+        <thead class="text-xs uppercase bg-black/40 text-gray-400">
+          <tr>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider">Company Name</th>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider">Email</th>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider">Type</th>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider">Stats</th>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-white/5">
+          <tr *ngFor="let vendor of vendors" class="hover:bg-white/5 transition-colors">
+            <td class="px-6 py-4 font-medium text-white">{{ vendor.name }}</td>
+            <td class="px-6 py-4">{{ vendor.email }}</td>
+            <td class="px-6 py-4">
+              <span class="px-2.5 py-1 text-xs font-semibold rounded-full border"
+                    [ngClass]="vendor.level === 0 ? 'bg-primary/20 text-primary border-primary/30' : 'bg-blue-500/20 text-blue-400 border-blue-500/30'">
+                {{ vendor.level === 0 ? 'SUPER VENDOR' : 'VENDOR' }}
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex gap-3 text-xs">
+                <span class="flex items-center gap-1"><i class="ri-user-line"></i> {{ vendor._count?.users || 0 }}</span>
+                <span class="flex items-center gap-1"><i class="ri-steering-2-line"></i> {{ vendor._count?.drivers || 0 }}</span>
+                <span class="flex items-center gap-1"><i class="ri-car-line"></i> {{ vendor._count?.vehicles || 0 }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <button (click)="confirmDelete(vendor)" class="neo-button bg-red-600 hover:bg-red-500 text-white border-red-800 px-3 py-1.5 text-sm uppercase font-bold tracking-wider rounded">
+                <i class="ri-delete-bin-line mr-1"></i> Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="vendorToDelete" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+  <div class="glass-panel max-w-md w-full rounded-2xl border border-red-500/30 shadow-[0_0_30px_rgba(239,68,68,0.15)] overflow-hidden">
+    <div class="p-6">
+      <div class="w-12 h-12 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center mb-4 text-2xl mx-auto">
+        <i class="ri-alert-line"></i>
+      </div>
+      <h3 class="text-xl font-bold text-center text-white mb-2">Delete Account?</h3>
+      <p class="text-gray-400 text-center mb-6">
+        Are you absolutely sure you want to delete <span class="text-white font-semibold">{{ vendorToDelete.name }}</span>? 
+        <br><br>
+        <span class="text-red-400 text-sm border border-red-500/30 bg-red-500/10 p-2 rounded block">This will permanently delete all associated drivers, vehicles, users, trips, and payments. This action cannot be undone.</span>
+      </p>
+      
+      <div class="flex gap-3 mt-8">
+        <button (click)="cancelDelete()" [disabled]="isDeleting" class="flex-1 bg-white/5 hover:bg-white/10 text-white font-bold py-3 px-4 border border-white/10 rounded transition-colors uppercase tracking-wider text-sm">
+          Cancel
+        </button>
+        <button (click)="executeDelete()" [disabled]="isDeleting" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-4 rounded border-b-4 border-red-800 active:border-b-0 active:mt-1 transition-all uppercase tracking-wider text-sm flex justify-center items-center">
+          <span *ngIf="isDeleting" class="animate-spin h-5 w-5 border-2 border-white/20 border-t-white rounded-full mr-2"></span>
+          Confirm Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -12,6 +12,7 @@ export const routes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'admin', loadComponent: () => import('./admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent), canActivate: [authGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'hierarchy', component: HierarchyComponent, canActivate: [authGuard] },
   { path: 'vendor/:id', loadComponent: () => import('./vendor-detail/vendor-detail.component').then(m => m.VendorDetailComponent), canActivate: [authGuard] },

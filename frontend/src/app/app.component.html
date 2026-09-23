@@ -11,6 +11,7 @@
 
       <nav class="nav-pill-container" style="gap: 4px;">
         <a routerLink="/dashboard" routerLinkActive="active" class="nav-pill">Dashboard</a>
+        <a routerLink="/admin" routerLinkActive="active" class="nav-pill" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.3);" *ngIf="authService.getProfile()?.role === 'SUPER_ADMIN'">Admin Control</a>
         <a routerLink="/hierarchy" routerLinkActive="active" class="nav-pill" *ngIf="authService.hasPermission('VENDOR_VIEW')">Hierarchy</a>
         <a routerLink="/hierarchy" [queryParams]="{add: true}" class="nav-pill" *ngIf="authService.hasPermission('VENDOR_CREATE')">+ Add Vendor</a>
         

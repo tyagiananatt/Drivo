@@ -98,12 +98,14 @@ p {
 }
 
 .top-nav {
-  height: 80px;
+  min-height: 80px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
+  padding: 16px 40px;
   background: transparent;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .brand {
@@ -129,13 +131,21 @@ p {
   padding: 4px;
   border: 1px solid var(--border);
   backdrop-filter: blur(10px);
+  overflow-x: auto;
+  white-space: nowrap;
+  flex: 1;
+  max-width: 100%;
+  scrollbar-width: none;
+}
+.nav-pill-container::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-pill {
-  padding: 10px 28px;
+  padding: 10px 24px;
   border-radius: var(--border-radius-pill);
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   font-family: 'Orbitron', sans-serif;
   letter-spacing: 1px;
@@ -145,6 +155,7 @@ p {
   border: none;
   background: transparent;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .nav-pill:hover {
@@ -540,6 +551,19 @@ select option {
   .auth-split {
     padding: 20px;
     justify-content: center;
+  }
+  
+  .top-nav {
+    padding: 16px 20px;
+  }
+  
+  .nav-pill-container {
+    order: 3;
+    width: 100%;
+  }
+  
+  .main-content {
+    padding: 0 20px 20px 20px;
   }
 }
 

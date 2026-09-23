@@ -7,6 +7,26 @@ import * as bcrypt from 'bcrypt';
 export class VendorsService {
   constructor(private prisma: PrismaService) {}
 
+  async findAllForAdmin() {
+    return this.prisma.vendor.findMany({
+      include: {
+        _count: {
+          select: { users: true, drivers: true, vehicles: true, trips: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
+
+  async deleteVendorAdmin(id: string) {
+    const vendor = await this.prisma.vendor.findUnique({ where: { id } });
+    if (!vendor) throw new BadRequestException('Vendor not found');
+
+    // Thanks to Prisma's onDelete: Cascade, deleting the vendor will delete all nested relations automatically!
+    await this.prisma.vendor.delete({ where: { id } });
+    return { success: true, message: 'Vendor and all associated data deleted successfully' };
+  }
+
   async create(data: { name: string; email: string; parentId?: string; firstName?: string; lastName?: string; password?: string }) {
     let level = 0;
     if (data.parentId) {

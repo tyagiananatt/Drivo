@@ -48,9 +48,10 @@ export class VehiclesComponent implements OnInit {
 
   submitNewVehicle() {
     this.apiService.createVehicle(this.newVehicle).subscribe({
-      next: () => {
+      next: (createdVehicle) => {
         this.toastService.success('Success', 'Vehicle added successfully!');
         this.closeAddModal();
+        this.vehicles = [createdVehicle, ...this.vehicles];
         this.loadVehicles();
       },
       error: (err) => this.toastService.error('Error', err.error?.message || 'Failed to add vehicle')

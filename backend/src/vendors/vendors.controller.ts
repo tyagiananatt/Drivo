@@ -11,6 +11,18 @@ import { Permissions } from '../auth/decorators/permissions.decorator';
 export class VendorsController {
   constructor(private readonly vendorsService: VendorsService) {}
 
+  @Roles('SUPER_ADMIN')
+  @Get('all')
+  async getAllVendors() {
+    return this.vendorsService.findAllForAdmin();
+  }
+
+  @Roles('SUPER_ADMIN')
+  @Delete(':id')
+  async deleteVendor(@Param('id') id: string) {
+    return this.vendorsService.deleteVendorAdmin(id);
+  }
+
   @Permissions('VENDOR_CREATE')
   @Post()
   async create(@Body() body: any, @Request() req: any) {
