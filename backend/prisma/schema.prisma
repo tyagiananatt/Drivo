@@ -1,0 +1,225 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  roleId    String
+  vendorId  String?
+  role      Role     @relation(fields: [roleId], references: [id])
+  vendor    Vendor?  @relation(fields: [vendorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  auditLogs AuditLog[]
+}
+
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  permissions RolePermission[]
+  users       User[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String?
+  roles       RolePermission[]
+  delegations Delegation[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  createdAt    DateTime   @default(now())
+
+  @@unique([roleId, permissionId])
+}
+
+model Vendor {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  level     Int      @default(0)
+  status    String   @default("ACTIVE")
+  parentId  String?
+  
+  parent    Vendor?  @relation("VendorHierarchy", fields: [parentId], references: [id])
+  children  Vendor[] @relation("VendorHierarchy")
+  
+  users     User[]
+  drivers   Driver[]
+  vehicles  Vehicle[]
+  
+  delegationsGranted Delegation[] @relation("DelegationFrom")
+  delegationsReceived Delegation[] @relation("DelegationTo")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([parentId])
+  @@index([status])
+}
+
+model Delegation {
+  id           String     @id @default(uuid())
+  fromVendorId String
+  toVendorId   String
+  permissionId String
+  status       String     @default("ACTIVE") // ACTIVE, REVOKED, EXPIRED
+  startDate    DateTime   @default(now())
+  endDate      DateTime?
+  createdBy    String
+  
+  fromVendor   Vendor     @relation("DelegationFrom", fields: [fromVendorId], references: [id])
+  toVendor     Vendor     @relation("DelegationTo", fields: [toVendorId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([fromVendorId])
+  @@index([toVendorId])
+  @@index([status])
+}
+
+model Driver {
+  id                String   @id @default(uuid())
+  vendorId          String
+  name              String
+  email             String   @unique
+  phone             String   @unique
+  dateOfBirth       DateTime
+  address           String
+  emergencyContact  String
+  licenseNumber     String   @unique
+  licenseExpiryDate DateTime
+  status            String   @default("PENDING") // PENDING, ACTIVE, INACTIVE, BLOCKED, REJECTED
+  
+  vendor            Vendor   @relation(fields: [vendorId], references: [id])
+  assignments       DriverVehicleAssignment[]
+  documents         Document[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([vendorId])
+  @@index([status])
+  @@index([phone])
+}
+
+model Vehicle {
+  id                 String   @id @default(uuid())
+  vendorId           String
+  registrationNumber String   @unique
+  manufacturer       String
+  model              String
+  vehicleType        String
+  seatingCapacity    Int
+  fuelType           String
+  manufacturingYear  Int
+  status             String   @default("PENDING") // PENDING, ACTIVE, INACTIVE, BLOCKED
+  
+  vendor             Vendor   @relation(fields: [vendorId], references: [id])
+  assignments        DriverVehicleAssignment[]
+  documents          Document[]
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([vendorId])
+  @@index([status])
+}
+
+model DriverVehicleAssignment {
+  id           String    @id @default(uuid())
+  driverId     String
+  vehicleId    String
+  status       String    @default("ACTIVE") // ACTIVE, ENDED
+  assignedAt   DateTime  @default(now())
+  unassignedAt DateTime?
+  assignedBy   String
+  
+  driver       Driver    @relation(fields: [driverId], references: [id])
+  vehicle      Vehicle   @relation(fields: [vehicleId], references: [id])
+
+  @@index([driverId])
+  @@index([vehicleId])
+  @@index([status])
+}
+
+model Document {
+  id              String    @id @default(uuid())
+  entityType      String    // DRIVER, VEHICLE
+  documentType    String    // LICENSE, RC, INSURANCE, PERMIT, POLLUTION
+  fileUrl         String
+  issuedDate      DateTime?
+  expiryDate      DateTime?
+  status          String    @default("PENDING") // PENDING, VERIFIED, REJECTED, EXPIRED
+  verifiedBy      String?
+  verifiedAt      DateTime?
+  rejectionReason String?
+  
+  driverId        String?
+  vehicleId       String?
+  
+  driver          Driver?   @relation(fields: [driverId], references: [id])
+  vehicle         Vehicle?  @relation(fields: [vehicleId], references: [id])
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([driverId])
+  @@index([vehicleId])
+  @@index([status])
+  @@index([expiryDate])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  vendorId  String?
+  action    String
+  entity    String
+  entityId  String
+  oldValue  String?  @db.Text
+  newValue  String?  @db.Text
+  
+  user      User     @relation(fields: [userId], references: [id])
+  
+  createdAt DateTime @default(now())
+
+  @@index([vendorId])
+  @@index([entity, entityId])
+}

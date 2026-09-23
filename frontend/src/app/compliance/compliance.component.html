@@ -1,0 +1,87 @@
+<div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+  <div>
+    <h1 class="title" style="font-size: 32px; font-weight: 800; font-family: 'Orbitron', sans-serif;">Compliance Monitoring</h1>
+    <p style="color: var(--text-secondary); margin-top: 8px;">Review active document alerts and blocked entities.</p>
+  </div>
+  <button class="btn btn-primary" (click)="runCheck()" [disabled]="isRunningCheck">
+    {{ isRunningCheck ? 'Scanning...' : 'Run Compliance Check Now' }}
+  </button>
+</div>
+
+@if (isLoading) {
+  <div style="text-align: center; padding: 40px; color: var(--text-muted);">Loading alerts...</div>
+} @else {
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+    
+    <!-- Documents Alert -->
+    <div class="card">
+      <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; font-family: 'Orbitron', sans-serif; color: var(--primary);">Document Alerts ({{ documents.length }})</h2>
+      
+      @if (documents.length === 0) {
+        <p style="color: var(--text-muted);">No pending, expired, or rejected documents found.</p>
+      } @else {
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Entity</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Expiry Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (doc of documents; track doc.id) {
+                <tr>
+                  <td>{{ doc.entityName }} <span style="font-size: 10px; color: var(--text-muted);">({{ doc.entityType }})</span></td>
+                  <td>{{ doc.documentType }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="{'badge-warning': doc.status === 'PENDING', 'badge-danger': doc.status === 'EXPIRED' || doc.status === 'REJECTED'}">
+                      {{ doc.status }}
+                    </span>
+                  </td>
+                  <td>{{ doc.expiryDate | date:'mediumDate' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
+    <!-- Blocked Entities -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      
+      <div class="card" style="margin-bottom: 0;">
+        <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; font-family: 'Orbitron', sans-serif; color: #f87171;">Blocked Drivers ({{ blockedDrivers.length }})</h2>
+        @if (blockedDrivers.length === 0) {
+          <p style="color: var(--text-muted);">No blocked drivers.</p>
+        } @else {
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+            @for (driver of blockedDrivers; track driver.id) {
+              <li style="padding: 12px; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.2); border-radius: 8px; color: #f87171; font-weight: 600;">
+                {{ driver.name }}
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <div class="card" style="margin-bottom: 0;">
+        <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; font-family: 'Orbitron', sans-serif; color: #f87171;">Blocked Vehicles ({{ blockedVehicles.length }})</h2>
+        @if (blockedVehicles.length === 0) {
+          <p style="color: var(--text-muted);">No blocked vehicles.</p>
+        } @else {
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+            @for (vehicle of blockedVehicles; track vehicle.id) {
+              <li style="padding: 12px; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.2); border-radius: 8px; color: #f87171; font-weight: 600;">
+                {{ vehicle.registrationNumber }}
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+    </div>
+  </div>
+}

@@ -1,0 +1,67 @@
+@if (authService.isAuthenticated()) {
+  <div class="app-layout">
+    <!-- Top Navigation -->
+    <header class="top-nav">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="2" width="4" height="4"/><rect x="8" y="2" width="4" height="4"/><rect x="14" y="2" width="4" height="4"/><rect x="2" y="8" width="4" height="4"/><rect x="8" y="8" width="4" height="4"/><rect x="14" y="8" width="4" height="4"/><rect x="2" y="14" width="4" height="4"/><rect x="8" y="14" width="4" height="4"/><rect x="14" y="14" width="4" height="4"/></svg>
+        </div>
+        Drivo
+      </div>
+
+      <nav class="nav-pill-container" style="gap: 4px;">
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-pill">Dashboard</a>
+        <a routerLink="/hierarchy" routerLinkActive="active" class="nav-pill" *ngIf="authService.hasPermission('VENDOR_VIEW')">Hierarchy</a>
+        <a routerLink="/hierarchy" [queryParams]="{add: true}" class="nav-pill" *ngIf="authService.hasPermission('VENDOR_CREATE')">+ Add Vendor</a>
+        
+        <a routerLink="/vehicles" routerLinkActive="active" class="nav-pill" *ngIf="authService.hasPermission('VEHICLE_VIEW')">Vehicles</a>
+        <a routerLink="/drivers" routerLinkActive="active" class="nav-pill" *ngIf="authService.hasPermission('DRIVER_VIEW')">Drivers</a>
+        <a routerLink="/documents" routerLinkActive="active" class="nav-pill" *ngIf="authService.hasPermission('DOCUMENT_UPLOAD') || authService.hasPermission('DOCUMENT_VERIFY')">Documents</a>
+        
+        <a routerLink="/compliance" routerLinkActive="active" class="nav-pill" *ngIf="authService.hasPermission('COMPLIANCE_VIEW')">Compliance</a>
+        <a routerLink="/reports" routerLinkActive="active" class="nav-pill" *ngIf="authService.hasPermission('REPORTS_VIEW')">Reports</a>
+      </nav>
+
+      <div class="top-nav-actions">
+        <!-- Profile Dropdown Container -->
+        <div style="position: relative;">
+          <div class="user-avatar" (click)="showProfileDropdown = !showProfileDropdown" style="cursor: pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #000;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          
+          <!-- Dropdown Menu -->
+          @if (showProfileDropdown) {
+            <div style="position: absolute; top: 120%; right: 0; width: 200px; background: rgba(20,20,20,0.95); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 100; display: flex; flex-direction: column; padding: 8px;">
+              <a routerLink="/profile" (click)="showProfileDropdown = false" style="padding: 12px 16px; color: var(--text-primary); text-decoration: none; border-radius: 4px; display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                My Profile
+              </a>
+              <div style="height: 1px; background: var(--border); margin: 4px 0;"></div>
+              <a (click)="logout(); showProfileDropdown = false" style="padding: 12px 16px; color: #f87171; text-decoration: none; border-radius: 4px; display: flex; align-items: center; gap: 8px; font-weight: 500; cursor: pointer;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                Logout
+              </a>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+    
+    <!-- Notifications -->
+    @if (notificationCount > 0) {
+      <div class="notification-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+        {{ notificationCount }} Compliance Alerts
+      </div>
+    }
+  </div>
+} @else {
+  <router-outlet></router-outlet>
+}
+
+<app-toast></app-toast>

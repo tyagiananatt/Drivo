@@ -1,0 +1,340 @@
+<div style="margin-bottom: 32px;">
+  <!-- Hero Section (Full Width, More Engaging) -->
+  <div class="card"
+    style="margin-bottom: 0; min-height: 480px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; overflow: hidden; background: radial-gradient(circle at center, rgba(212,255,0,0.05) 0%, rgba(0,0,0,0.8) 100%), url('https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs/solid/truck-fast.svg') no-repeat center center; background-size: 800px; background-blend-mode: overlay;">
+
+    <div
+      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(21, 22, 20, 0.7); z-index: 1;">
+    </div>
+
+    <div style="position: relative; z-index: 2; display: flex; flex-direction: column; gap: 24px;">
+      <div>
+        <h1 class="title"
+          style="font-size: 72px; font-weight: 900; letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase; text-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+          {{ vendorName }}
+        </h1>
+        <h2 class="title"
+          style="font-size: 28px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(212,255,0,0.2);">
+          Unleashing Peak Fleet Performance
+        </h2>
+        @if (role !== 'Super Vendor' && superVendorName) {
+        <div style="font-size: 16px; color: var(--text-muted); margin-top: 12px; font-family: 'Orbitron', sans-serif;">
+          Registered under <strong style="color: var(--primary);">{{ superVendorName }}</strong>
+          @if (directParentName && directParentName !== superVendorName) {
+          (Managed by {{ directParentName }})
+          }
+        </div>
+        }
+      </div>
+
+      <p style="font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto;">
+        Monitor your active vehicles, compliance alerts, and overall fleet efficiency in real-time.
+      </p>
+
+      <!-- Hero Data Cards -->
+      <div style="display: flex; gap: 24px; justify-content: center; margin-top: 32px; flex-wrap: wrap;">
+        <div
+          style="background: rgba(0,0,0,0.6); backdrop-filter: blur(16px); padding: 24px 48px; border-radius: var(--border-radius); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+          <div
+            style="font-size: 14px; color: var(--text-secondary); font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">
+            Total Vehicles</div>
+          <div style="font-size: 48px; font-weight: 700; color: var(--text-primary);">{{ totalVehicles }}</div>
+        </div>
+
+        <div
+          style="background: rgba(0,0,0,0.6); backdrop-filter: blur(16px); padding: 24px 48px; border-radius: var(--border-radius); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+          <div
+            style="font-size: 14px; color: var(--text-secondary); font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">
+            Active Drivers</div>
+          <div style="font-size: 48px; font-weight: 700; color: var(--text-primary);">{{ activeDrivers }}</div>
+        </div>
+
+        <div
+          style="background: rgba(0,0,0,0.6); backdrop-filter: blur(16px); padding: 24px 48px; border-radius: var(--border-radius); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+          <div
+            style="font-size: 14px; color: var(--text-secondary); font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">
+            Sub Vendors</div>
+          <div style="font-size: 48px; font-weight: 700; color: var(--text-primary);">{{ subVendors }}</div>
+        </div>
+
+        <div
+          style="background: rgba(212,255,0,0.05); backdrop-filter: blur(16px); padding: 24px 48px; border-radius: var(--border-radius); border: 1px solid rgba(212,255,0,0.3); box-shadow: 0 10px 30px rgba(212,255,0,0.1);">
+          <div
+            style="font-size: 14px; color: var(--primary); font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">
+            Compliance Alerts</div>
+          <div style="font-size: 48px; font-weight: 700; color: var(--primary);">{{ complianceAlerts }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Fleet Analytics Section -->
+<div class="card" style="margin-bottom: 24px;">
+  <h2 class="title"
+    style="font-size: 20px; font-weight: 700; font-family: 'Orbitron', sans-serif; margin-bottom: 24px;">Fleet Analytics
+  </h2>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;">
+
+    <!-- Fleet Growth -->
+    <div
+      style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
+      <h3
+        style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">
+        Fleet Growth</h3>
+      <div style="height: 200px; position: relative;">
+        @if (fleetGrowthChartData) {
+        <canvas baseChart [data]="fleetGrowthChartData" [options]="lineChartOptions" type="line"></canvas>
+        } @else {
+        <div
+          style="height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+          Loading...</div>
+        }
+      </div>
+    </div>
+
+    <!-- Vehicle Types -->
+    <div
+      style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
+      <h3
+        style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">
+        Vehicle Composition</h3>
+      <div style="height: 200px; position: relative;">
+        @if (vehicleTypesChartData) {
+        <canvas baseChart [data]="vehicleTypesChartData" [options]="doughnutChartOptions" type="doughnut"></canvas>
+        } @else {
+        <div
+          style="height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+          Loading...</div>
+        }
+      </div>
+    </div>
+
+    <!-- Compliance Status -->
+    <div
+      style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
+      <h3
+        style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">
+        Compliance Health</h3>
+      <div style="height: 200px; position: relative;">
+        @if (complianceChartData) {
+        <canvas baseChart [data]="complianceChartData" [options]="barChartOptions" type="bar"></canvas>
+        } @else {
+        <div
+          style="height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+          Loading...</div>
+        }
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 24px;">
+  <!-- Column 1: Vehicle Status -->
+  <div class="card" style="margin-bottom: 0;">
+    <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 20px;">Vehicle Status</h2>
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 12px; height: 12px; border-radius: 50%; background: #4ade80;"></div>
+          <span style="color: var(--text-secondary); font-size: 14px;">Active</span>
+        </div>
+        <span style="font-size: 20px; font-weight: 700; color: var(--text-primary);">{{ vehicleStatusBreakdown.active
+          }}</span>
+      </div>
+
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 12px; height: 12px; border-radius: 50%; background: #facc15;"></div>
+          <span style="color: var(--text-secondary); font-size: 14px;">Pending Approval</span>
+        </div>
+        <span style="font-size: 20px; font-weight: 700; color: var(--text-primary);">{{ vehicleStatusBreakdown.pending
+          }}</span>
+      </div>
+
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 12px; height: 12px; border-radius: 50%; background: #f87171;"></div>
+          <span style="color: var(--text-secondary); font-size: 14px;">Inactive</span>
+        </div>
+        <span style="font-size: 20px; font-weight: 700; color: var(--text-primary);">{{ vehicleStatusBreakdown.inactive
+          }}</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Column 2: Driver Assignments -->
+  <div class="card" style="margin-bottom: 0;">
+    <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 20px;">Driver Availability</h2>
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+
+      <div
+        style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(212,255,0,0.05); border: 1px solid rgba(212,255,0,0.2); border-radius: 8px; padding: 24px;">
+        <div style="font-size: 36px; font-weight: 700; color: var(--primary);">{{ driverAssignment.unassigned }}</div>
+        <div
+          style="color: var(--text-secondary); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px;">
+          Available / Unassigned</div>
+      </div>
+
+      <div
+        style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 16px;">
+        <div style="font-size: 24px; font-weight: 700; color: var(--text-primary);">{{ driverAssignment.assigned }}
+        </div>
+        <div
+          style="color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">
+          Assigned to Vehicles</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Column 3: Recent Onboardings -->
+  <div class="card" style="margin-bottom: 0;">
+    <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 20px;">Recent Network Onboardings</h2>
+
+    @if (recentOnboardings.length === 0) {
+    <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+      <p>No recent drivers or vehicles found.</p>
+    </div>
+    }
+
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      @for (item of recentOnboardings; track item.name) {
+      <div
+        style="display: flex; gap: 16px; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+
+        <div
+          style="width: 40px; height: 40px; border-radius: 8px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
+          @if (item.type === 'Vehicle') {
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
+            <path d="M15 18H9" />
+            <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" />
+            <circle cx="17" cy="18" r="2" />
+            <circle cx="7" cy="18" r="2" />
+          </svg>
+          } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          }
+        </div>
+
+        <div style="flex: 1;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 600; font-size: 15px; color: var(--text-primary);">{{ item.name }}</span>
+            <span class="badge"
+              [ngClass]="{'badge-success': item.status === 'ACTIVE', 'badge-warning': item.status === 'PENDING', 'badge-danger': item.status === 'INACTIVE'}"
+              style="font-size: 10px; padding: 2px 6px;">
+              {{ item.status }}
+            </span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+            <div style="font-size: 13px; color: var(--text-secondary);">{{ item.type }} • {{ item.detail }}</div>
+            <div style="font-size: 12px; color: var(--text-muted);">{{ item.date | date:'shortDate' }}</div>
+          </div>
+        </div>
+
+      </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Vendor Management Section -->
+<div class="card" style="margin-top: 24px;">
+  <div class="flex justify-between align-center" style="margin-bottom: 24px;">
+    <div>
+      <h2 class="title" style="font-size: 20px; font-weight: 700; font-family: 'Orbitron', sans-serif;">Vendor Network
+      </h2>
+      <p style="color: var(--text-secondary); margin-top: 8px;">Manage your direct sub-vendors and their permissions.
+      </p>
+    </div>
+    <div class="flex gap-4">
+      <a routerLink="/hierarchy" class="btn btn-outline" style="text-decoration: none;">View All Vendors</a>
+      <button *ngIf="authService.hasPermission('VENDOR_CREATE')" class="btn btn-primary"
+        (click)="openAddVendorModal()">+ Add Sub-Vendor</button>
+    </div>
+  </div>
+
+  @if (directSubVendors.length > 0) {
+  <div class="table-container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Vendor Name</th>
+          <th>Email</th>
+          <th>Level</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (vendor of directSubVendors; track vendor.id) {
+        <tr style="cursor: pointer;" [routerLink]="['/vendor', vendor.id]">
+          <td style="font-weight: 500; color: var(--primary);">{{ vendor.name }}</td>
+          <td style="color: var(--text-secondary);">{{ vendor.email || 'N/A' }}</td>
+          <td><span class="badge" style="background: rgba(255,255,255,0.1);">Level {{ vendor.level }}</span></td>
+          <td>
+            <span class="badge" [ngClass]="vendor.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'">
+              {{ vendor.status || 'ACTIVE' }}
+            </span>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  } @else {
+  <div
+    style="text-align: center; padding: 40px 20px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px dashed var(--border);">
+    <p style="color: var(--text-muted); margin-bottom: 16px;">You don't have any sub-vendors yet.</p>
+    <button *ngIf="authService.hasPermission('VENDOR_CREATE')" class="btn btn-primary"
+      (click)="openAddVendorModal()">Create Your First Sub-Vendor</button>
+  </div>
+  }
+</div>
+
+@if (showAddModal) {
+<div class="modal-backdrop">
+  <div class="modal-content">
+    <h2 class="title" style="margin-bottom: 24px;">Add Sub-Vendor</h2>
+    <div class="form-group">
+      <label>Company Name</label>
+      <input type="text" class="form-control" [(ngModel)]="newVendor.name" placeholder="E.g. City Transport Ltd">
+    </div>
+    <div class="flex gap-4">
+      <div class="form-group" style="flex: 1;">
+        <label>First Name</label>
+        <input type="text" class="form-control" [(ngModel)]="newVendor.firstName" placeholder="Admin First Name">
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>Last Name</label>
+        <input type="text" class="form-control" [(ngModel)]="newVendor.lastName" placeholder="Admin Last Name">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" class="form-control" [(ngModel)]="newVendor.email" placeholder="admin@citytransport.com">
+    </div>
+    <div class="form-group mb-6">
+      <label>Temporary Password</label>
+      <input type="password" class="form-control" [(ngModel)]="newVendor.password"
+        placeholder="Set a password for them">
+    </div>
+    <div class="flex gap-2" style="justify-content: flex-end;">
+      <button class="btn btn-outline" (click)="closeAddVendorModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="submitNewVendor()">Create Vendor</button>
+    </div>
+  </div>
+</div>
+}

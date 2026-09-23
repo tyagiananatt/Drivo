@@ -1,0 +1,140 @@
+<div class="card" style="margin-bottom: 24px;">
+  <div class="card-header" style="margin-bottom: 0;">
+    <div>
+      <h1 class="title">Document Center</h1>
+      <p>Upload and verify driver and vehicle documents.</p>
+    </div>
+    
+    <div class="flex gap-4">
+      <button class="btn" [ngClass]="mode === 'UPLOAD' ? 'btn-primary' : 'btn-outline'" (click)="mode = 'UPLOAD'">Upload Documents</button>
+      <button *ngIf="authService.hasPermission('DOCUMENT_VERIFY')" class="btn" [ngClass]="mode === 'VERIFY' ? 'btn-primary' : 'btn-outline'" (click)="mode = 'VERIFY'">Verification Center</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPLOAD SECTION -->
+@if (mode === 'UPLOAD') {
+  <div class="card">
+    <h2 class="title" style="margin-bottom: 24px; font-size: 18px;">Bulk Upload Documents</h2>
+    
+    <!-- Entity Selection -->
+    <div class="flex gap-4" style="margin-bottom: 32px;">
+      <div class="form-group" style="flex: 1;">
+        <label>Entity Type</label>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn" [ngClass]="entityType === 'DRIVER' ? 'btn-primary' : 'btn-outline'" (click)="onEntityTypeChange('DRIVER')" style="flex: 1;">Driver</button>
+          <button type="button" class="btn" [ngClass]="entityType === 'VEHICLE' ? 'btn-primary' : 'btn-outline'" (click)="onEntityTypeChange('VEHICLE')" style="flex: 1;">Vehicle</button>
+        </div>
+      </div>
+      
+      <div class="form-group" style="flex: 2;">
+        <label>Select {{ entityType === 'DRIVER' ? 'Driver' : 'Vehicle' }}</label>
+        <select class="form-control" [(ngModel)]="selectedEntityId" required>
+          <option value="">-- Select --</option>
+          @if (entityType === 'DRIVER') {
+            @for (d of drivers; track d.id) {
+              <option [value]="d.id">{{ d.name }} ({{ d.phone }})</option>
+            }
+          } @else {
+            @for (v of vehicles; track v.id) {
+              <option [value]="v.id">{{ v.registrationNumber }} ({{ v.manufacturer }} {{ v.model }})</option>
+            }
+          }
+        </select>
+      </div>
+    </div>
+
+    <!-- Document Slots -->
+    <div *ngIf="selectedEntityId" style="display: flex; flex-direction: column; gap: 16px;">
+      <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px;">Required Documents</h3>
+      
+      @for (docType of currentDocTypes; track docType) {
+        <div style="display: flex; gap: 16px; align-items: center; background: rgba(255,255,255,0.02); padding: 16px; border-radius: 8px; border: 1px solid var(--border);">
+          <div style="flex: 1; font-weight: 600;">
+            {{ docType }}
+          </div>
+          
+          <div style="flex: 2;">
+            <input type="file" class="form-control" (change)="onFileSelected($event, docType)" accept=".jpg,.jpeg,.png,.pdf">
+          </div>
+          
+          <div style="flex: 1;">
+            <input type="date" class="form-control" [(ngModel)]="uploadPayload[docType].expiryDate" placeholder="Expiry Date">
+          </div>
+          
+          <div style="width: 32px; display: flex; justify-content: center;">
+            @if (uploadPayload[docType].file) {
+              <span style="color: #4ade80;">✓</span>
+            }
+          </div>
+        </div>
+      }
+
+      <div style="margin-top: 24px; display: flex; justify-content: flex-end;">
+        <button class="btn btn-primary" (click)="submitUpload()" [disabled]="isUploading">
+          {{ isUploading ? 'Uploading...' : 'Upload Selected Documents' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- VERIFICATION SECTION -->
+@if (mode === 'VERIFY' && authService.hasPermission('DOCUMENT_VERIFY')) {
+  <div class="card">
+    <h2 class="title" style="margin-bottom: 24px; font-size: 18px;">Pending Verification</h2>
+    
+    @if (isLoadingDocs) {
+      <div style="text-align: center; padding: 40px; color: var(--text-muted);">Loading documents...</div>
+    } @else {
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Document Type</th>
+              <th>Entity</th>
+              <th>Vendor</th>
+              <th>Uploaded Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (doc of documents; track doc.id) {
+              @if (doc.status === 'PENDING') {
+                <tr>
+                  <td style="font-weight: 600;">{{ doc.documentType }}</td>
+                  <td>
+                    @if (doc.driver) {
+                      <span style="color: var(--primary);">Driver: {{ doc.driver.name }}</span>
+                    } @else if (doc.vehicle) {
+                      <span style="color: var(--primary);">Vehicle: {{ doc.vehicle.registrationNumber }}</span>
+                    }
+                  </td>
+                  <td>
+                    <div style="font-size: 12px; color: var(--text-secondary);">
+                      {{ doc.driver?.vendor?.name || doc.vehicle?.vendor?.name || 'Unknown' }}
+                    </div>
+                  </td>
+                  <td>{{ doc.createdAt | date:'short' }}</td>
+                  <td><span class="badge badge-warning">{{ doc.status }}</span></td>
+                  <td>
+                    <div style="display: flex; gap: 8px;">
+                      <!-- Would normally link to the actual file preview here -->
+                      <a [href]="'http://localhost:3000/api/documents/' + doc.id + '/url'" target="_blank" class="btn btn-outline" style="padding: 4px 8px; font-size: 12px;">View</a>
+                      <button class="btn" style="background: rgba(74,222,128,0.2); color: #4ade80; padding: 4px 8px; font-size: 12px; border: 1px solid #4ade80;" (click)="verify(doc.id, 'VERIFIED')">Approve</button>
+                      <button class="btn" style="background: rgba(248,113,113,0.2); color: #f87171; padding: 4px 8px; font-size: 12px; border: 1px solid #f87171;" (click)="verify(doc.id, 'REJECTED')">Reject</button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+            @if (documents.length === 0) {
+              <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 32px;">No pending documents to verify.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+}

@@ -1,0 +1,128 @@
+<div class="card">
+  <div class="card-header" style="margin-bottom: 0;">
+    <div>
+      <h1 class="title">Fleet Vehicles</h1>
+      <p>Manage all vehicles registered under your network.</p>
+    </div>
+    
+    <div class="flex gap-4">
+      <button *ngIf="authService.hasPermission('VEHICLE_CREATE')" class="btn btn-primary" (click)="openAddModal()">+ Add Vehicle</button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Reg. Number</th>
+          <th>Manufacturer / Model</th>
+          <th>Type / Fuel</th>
+          <th>Capacity / Year</th>
+          <th>Vendor</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (v of vehicles; track v.id) {
+          <tr>
+            <td style="font-weight: 700; color: var(--primary);">{{ v.registrationNumber }}</td>
+            <td>
+              <div style="font-weight: 500;">{{ v.manufacturer }}</div>
+              <div style="color: var(--text-muted); font-size: 11px;">{{ v.model }}</div>
+            </td>
+            <td>{{ v.vehicleType }} / {{ v.fuelType }}</td>
+            <td>{{ v.seatingCapacity }} Seats / {{ v.manufacturingYear }}</td>
+            <td>
+              <div style="font-weight: 500; font-size: 13px;">{{ v.vendor?.name || 'Unknown' }}</div>
+            </td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge" [ngClass]="{'badge-success': v.status === 'ACTIVE', 'badge-warning': v.status === 'PENDING', 'badge-danger': v.status === 'INACTIVE'}">
+                  {{ v.status }}
+                </span>
+                <button *ngIf="v.status === 'PENDING' && authService.hasPermission('VEHICLE_UPDATE')" 
+                        class="btn btn-outline" 
+                        style="padding: 2px 8px; font-size: 10px;" 
+                        (click)="approveVehicle(v.id)">
+                  Approve
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+        @if (vehicles.length === 0) {
+          <tr>
+            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 32px;">No vehicles found.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@if (showAddModal) {
+  <div class="modal-backdrop">
+    <div class="modal-content">
+      <h2 class="title" style="margin-bottom: 24px;">Add New Vehicle</h2>
+      
+      <form (ngSubmit)="submitNewVehicle()">
+        <div class="form-group">
+          <label>Registration Number (License Plate)</label>
+          <input type="text" class="form-control" [(ngModel)]="newVehicle.registrationNumber" name="reg" required>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="form-group" style="flex: 1;">
+            <label>Manufacturer</label>
+            <input type="text" class="form-control" [(ngModel)]="newVehicle.manufacturer" name="mfg" required>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Model</label>
+            <input type="text" class="form-control" [(ngModel)]="newVehicle.model" name="model" required>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="form-group" style="flex: 1;">
+            <label>Vehicle Type</label>
+            <select class="form-control" [(ngModel)]="newVehicle.vehicleType" name="vtype" required>
+              <option value="Sedan">Sedan</option>
+              <option value="SUV">SUV</option>
+              <option value="Hatchback">Hatchback</option>
+              <option value="Van">Van</option>
+              <option value="Bus">Bus</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Fuel Type</label>
+            <select class="form-control" [(ngModel)]="newVehicle.fuelType" name="ftype" required>
+              <option value="Petrol">Petrol</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Electric">Electric</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="CNG">CNG</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="form-group" style="flex: 1;">
+            <label>Seating Capacity</label>
+            <input type="number" class="form-control" [(ngModel)]="newVehicle.seatingCapacity" name="capacity" required>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Manufacturing Year</label>
+            <input type="number" class="form-control" [(ngModel)]="newVehicle.manufacturingYear" name="year" required>
+          </div>
+        </div>
+
+        <div class="flex gap-2 mt-4" style="justify-content: flex-end;">
+          <button type="button" class="btn btn-outline" (click)="closeAddModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Vehicle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

@@ -1,0 +1,141 @@
+<div class="card">
+  <div class="card-header" style="margin-bottom: 0;">
+    <div>
+      <h1 class="title">Fleet Drivers</h1>
+      <p>Manage all drivers and their vehicle assignments.</p>
+    </div>
+    
+    <div class="flex gap-4">
+      <button *ngIf="authService.hasPermission('DRIVER_CREATE')" class="btn btn-primary" (click)="openAddModal()">+ Add Driver</button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Contact</th>
+          <th>License Info</th>
+          <th>Assignment</th>
+          <th>Vendor</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (d of drivers; track d.id) {
+          <tr>
+            <td style="font-weight: 700;">{{ d.name }}</td>
+            <td>
+              <div style="font-weight: 500;">{{ d.phone }}</div>
+              <div style="color: var(--text-muted); font-size: 11px;">{{ d.email }}</div>
+            </td>
+            <td>
+              <div style="font-weight: 500;">{{ d.licenseNumber }}</div>
+              <div style="color: var(--text-muted); font-size: 11px;">Exp: {{ d.licenseExpiryDate | date }}</div>
+            </td>
+            <td>
+              @if (d.assignments && d.assignments.length > 0) {
+                <span style="color: var(--primary);">{{ d.assignments[0].vehicle.registrationNumber }}</span>
+              } @else {
+                <span style="color: var(--text-muted);">Unassigned</span>
+              }
+            </td>
+            <td>
+              <div style="font-weight: 500; font-size: 13px;">{{ d.vendor?.name || 'Unknown' }}</div>
+            </td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge" [ngClass]="{'badge-success': d.status === 'ACTIVE', 'badge-warning': d.status === 'PENDING', 'badge-danger': d.status === 'INACTIVE' || d.status === 'BLOCKED'}">
+                  {{ d.status }}
+                </span>
+                <button *ngIf="d.status === 'PENDING' && authService.hasPermission('DRIVER_UPDATE')" 
+                        class="btn btn-outline" 
+                        style="padding: 2px 8px; font-size: 10px;" 
+                        (click)="approveDriver(d.id)">
+                  Approve
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+        @if (drivers.length === 0) {
+          <tr>
+            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 32px;">No drivers found.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@if (showAddModal) {
+  <div class="modal-backdrop">
+    <div class="modal-content" style="max-width: 600px;">
+      <h2 class="title" style="margin-bottom: 24px;">Add New Driver</h2>
+      
+      <form (ngSubmit)="submitNewDriver()">
+        <div class="flex gap-4">
+          <div class="form-group" style="flex: 1;">
+            <label>Full Name</label>
+            <input type="text" class="form-control" [(ngModel)]="newDriver.name" name="name" required>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Date of Birth</label>
+            <input type="date" class="form-control" [(ngModel)]="newDriver.dateOfBirth" name="dob" required>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="form-group" style="flex: 1;">
+            <label>Email Address</label>
+            <input type="email" class="form-control" [(ngModel)]="newDriver.email" name="email" required>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Phone Number</label>
+            <input type="text" class="form-control" [(ngModel)]="newDriver.phone" name="phone" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Address</label>
+          <input type="text" class="form-control" [(ngModel)]="newDriver.address" name="address" required>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="form-group" style="flex: 1;">
+            <label>License Number</label>
+            <input type="text" class="form-control" [(ngModel)]="newDriver.licenseNumber" name="license" required>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>License Expiry Date</label>
+            <input type="date" class="form-control" [(ngModel)]="newDriver.licenseExpiryDate" name="expiry" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Emergency Contact</label>
+          <input type="text" class="form-control" [(ngModel)]="newDriver.emergencyContact" name="emergency" required>
+        </div>
+
+        <!-- Vehicle Assignment (Dynamic from DB) -->
+        <div class="form-group" *ngIf="authService.hasPermission('ASSIGN_DRIVERS') || authService.hasPermission('VEHICLE_UPDATE')">
+          <label>Instantly Assign to Vehicle (Optional)</label>
+          <select class="form-control" [(ngModel)]="newDriver.assignVehicleId" name="assignVehicle">
+            <option value="">-- No Assignment --</option>
+            @for (v of availableVehicles; track v.id) {
+              <option [value]="v.id">{{ v.registrationNumber }} ({{ v.manufacturer }} {{ v.model }})</option>
+            }
+          </select>
+        </div>
+
+        <div class="flex gap-2 mt-4" style="justify-content: flex-end;">
+          <button type="button" class="btn btn-outline" (click)="closeAddModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Driver</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
